@@ -8,7 +8,8 @@ public class CharacterController : MonoBehaviour {
 	}
 	void Move(int blocks)
 	{
-		transform.Translate (new Vector3 (12, 0, 0));
+		GameObject blackbox = GameObject.Find ("BlackBlock");
+		transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*blocks, 0, 0));
 	}
 	void Jump(int direction)
 	{	
@@ -27,6 +28,10 @@ public class CharacterController : MonoBehaviour {
 			Jump (-1);
 		if (Input.GetKeyDown (KeyCode.UpArrow))
 			Jump (1);
+		if (Input.GetKeyDown (KeyCode.RightArrow))
+			Move (1);
+		if (Input.GetKeyDown (KeyCode.LeftArrow))
+			Move (-1);
 		Rigidbody2D rb = GetComponent<Rigidbody2D>();
 		rb.AddForce (new Vector2(1f,0));
 	}
