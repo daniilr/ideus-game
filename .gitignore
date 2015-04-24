@@ -1,9 +1,4 @@
-.DS_Store
-Library
 Temp
-*.csproj
-*.pidb
-*.unityproj
-*.sln
-*.userprefs
 Puppet2D
+Library
+.DS_Store
