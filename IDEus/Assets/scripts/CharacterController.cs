@@ -16,6 +16,11 @@ public class CharacterController : MonoBehaviour {
 		if (rb.velocity.magnitude < 0.01)
 			rb.AddForce (new Vector2 (direction*3f, 3f), ForceMode2D.Impulse);
 	}
+
+	void Restart(){
+		Application.LoadLevel(Application.loadedLevel);
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Space))
@@ -24,6 +29,5 @@ public class CharacterController : MonoBehaviour {
 			Jump (1);
 		Rigidbody2D rb = GetComponent<Rigidbody2D>();
 		rb.AddForce (new Vector2(1f,0));
-
 	}
 }
