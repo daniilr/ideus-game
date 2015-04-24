@@ -8,7 +8,7 @@ public class TerrainGenerator : MonoBehaviour {
 		GameObject clone;
 		for (int i = 0; i < 10; i++) {
 			clone = Instantiate (Block);
-			clone.transform.position = new Vector3(Block.transform.position.x+i ,Block.transform.position.x+i,0);
+			clone.transform.Translate(new Vector3(i*1.5f, 0, 0));
 		}
 	}
 	
