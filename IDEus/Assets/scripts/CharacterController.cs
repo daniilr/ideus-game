@@ -9,11 +9,18 @@ public class CharacterController : MonoBehaviour {
 	}
 	void MoveForward(int blocks)
 	{
-		transform.Translate (new Vector3 (1.7f, 0, 0));
+		transform.Translate (new Vector3 (1.7f * blocks, 0, 0));
 	}
+
+	void Restart(){
+		Application.LoadLevel(Application.loadedLevel);
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.RightArrow))
 			MoveForward (1);
+		if (Input.GetKeyDown (KeyCode.C))
+			Restart ();
 	}
 }
