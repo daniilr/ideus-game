@@ -5,16 +5,18 @@ public class CharacterController : MonoBehaviour {
 	const int FRONT = 1;
 	const int BACK = -1;
 	Rigidbody2D rb;
-
+	private Animator anim;
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody2D>();
+		anim = GetComponent<Animator> ();
 	}
 
 	void Move(int direction)
 	{
 		GameObject blackbox = GameObject.Find ("BlackBlock");
-		transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0));
+		transform.position = Vector3.Lerp (transform.position, transform.position + new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0), 0.3f);
+		//transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0));
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
 
@@ -33,7 +35,6 @@ public class CharacterController : MonoBehaviour {
 	void Callback(string eventName){
 		Application.ExternalCall( "callbackEvent", eventName);
 	}
-
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Space))
@@ -44,7 +45,5 @@ public class CharacterController : MonoBehaviour {
 			Move (FRONT);
 		if (Input.GetKeyDown (KeyCode.LeftArrow))
 			Move (BACK);
-
-
 	}
 }
