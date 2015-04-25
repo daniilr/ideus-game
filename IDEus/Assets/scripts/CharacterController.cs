@@ -5,6 +5,7 @@ public class CharacterController : MonoBehaviour {
 	const int FRONT = 1;
 	const int BACK = -1;
 	Rigidbody2D rb;
+	int char_direction = FRONT;
 	private Animator anim;
 	// Use this for initialization
 	void Start () {
@@ -14,6 +15,10 @@ public class CharacterController : MonoBehaviour {
 
 	void Move(int direction)
 	{
+		if (char_direction != direction) {
+			Flip ();
+			char_direction *= -1;
+		}
 		GameObject blackbox = GameObject.Find ("BlackBlock");
 		transform.position = Vector3.Lerp (transform.position, transform.position + new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0), 0.3f);
 		//transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0));
@@ -31,7 +36,9 @@ public class CharacterController : MonoBehaviour {
 		Application.LoadLevel(Application.loadedLevel);
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
-
+	void Flip(){
+		transform.Rotate(new Vector3(0, 360, 0));
+	}
 	void Callback(string eventName){
 		Application.ExternalCall( "callbackEvent", eventName);
 	}
@@ -45,5 +52,10 @@ public class CharacterController : MonoBehaviour {
 			Move (FRONT);
 		if (Input.GetKeyDown (KeyCode.LeftArrow))
 			Move (BACK);
+		float axis = Input.GetAxis("Horizontal");
+		anim.SetFloat ("Speed", Mathf.Abs(axis));
+		if (axis != 0) {
+			transform.Translate(new Vector3(axis*0.01f,0,0));
+		}
 	}
 }
