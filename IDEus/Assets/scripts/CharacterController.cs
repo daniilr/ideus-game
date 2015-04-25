@@ -2,9 +2,14 @@
 using System.Collections;
 
 public class CharacterController : MonoBehaviour {
+	const int FRONT = 1;
+	const int BACK = -1;
+	//object[][] action_queue = new string[] {new string[]{"Jump", FRONT}, new string[]{"Jump", BACK}};
+	Rigidbody2D rb;
+
 	// Use this for initialization
 	void Start () {
-	
+		rb = GetComponent<Rigidbody2D>();
 	}
 	void Move(int blocks)
 	{
@@ -13,7 +18,6 @@ public class CharacterController : MonoBehaviour {
 	}
 	void Jump(int direction)
 	{	
-		Rigidbody2D rb = GetComponent<Rigidbody2D>();
 		if (rb.velocity.magnitude < 0.01)
 			rb.AddForce (new Vector2 (direction*3f, 3f), ForceMode2D.Impulse);
 	}
@@ -32,7 +36,9 @@ public class CharacterController : MonoBehaviour {
 			Move (1);
 		if (Input.GetKeyDown (KeyCode.LeftArrow))
 			Move (-1);
-		Rigidbody2D rb = GetComponent<Rigidbody2D>();
-		rb.AddForce (new Vector2(1f,0));
+//		if (action_queue.Length > 0 && rb.velocity.magnitude < 0.01) {
+//
+//		}
+
 	}
 }

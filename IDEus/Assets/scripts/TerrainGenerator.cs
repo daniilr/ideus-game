@@ -4,12 +4,23 @@ using System.Collections;
 public class TerrainGenerator : MonoBehaviour {
 	public GameObject Block;
 	// Use this for initialization
+	static int[] getRandomArray(int arraySize)
+	{
+		int[] array = new int[arraySize];
+		for (int i = 0; i < array.Length; i++) {
+			array[i] = Random.Range(1,3);
+		}
+		return array;
+	}
 	void Start () {
-		int[] level = new int[5] {1, 1, 1, 2, 1};
+		int[] level = getRandomArray(8);
 		GameObject clone;
 		for (int i = 0; i < level.Length; i++) {
-			clone = Instantiate (Block);
-			clone.transform.Translate(new Vector3(i*1.5f, 0, 0));
+			for(int n = 0; n < level[i]; n++){
+				Debug.Log(n);
+				clone = Instantiate (Block);
+				clone.transform.Translate(new Vector3(i*Block.GetComponent<Collider2D>().bounds.size.x, Block.GetComponent<Collider2D>().bounds.size.y*n, 0));
+			}
 		}
 
 	}
