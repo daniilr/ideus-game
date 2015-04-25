@@ -37,7 +37,7 @@ public class CharacterController : MonoBehaviour {
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
 	void Flip(){
-		transform.Rotate(new Vector3(0, 360, 0));
+		transform.Rotate(new Vector3(0, (transform.rotation.y == 180) ? 0 : 180, 0));
 	}
 	void Callback(string eventName){
 		Application.ExternalCall( "callbackEvent", eventName);
@@ -52,10 +52,12 @@ public class CharacterController : MonoBehaviour {
 			Move (FRONT);
 		if (Input.GetKeyDown (KeyCode.LeftArrow))
 			Move (BACK);
+		if (Input.GetKeyDown (KeyCode.F))
+			Flip ();
 		float axis = Input.GetAxis("Horizontal");
 		anim.SetFloat ("Speed", Mathf.Abs(axis));
 		if (axis != 0) {
-			transform.Translate(new Vector3(axis*0.01f,0,0));
+			transform.Translate(new Vector3(axis*-char_direction*0.01f,0,0));
 		}
 	}
 }
