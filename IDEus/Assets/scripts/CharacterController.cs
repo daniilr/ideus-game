@@ -24,7 +24,6 @@ public class CharacterController : MonoBehaviour {
 		GameObject blackbox = GameObject.Find ("BlackBlock");
 		Vector3 dest = transform.position + new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0);
 		moveQueue.Add (dest);
-		Debug.Log (moveQueue.Count);
 		//transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0));
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
@@ -65,9 +64,12 @@ public class CharacterController : MonoBehaviour {
 		//anim.SetFloat ("Speed", Mathf.Abs(axis));
 		if (moveQueue.Count > 0) {
 			anim.SetFloat ("Speed", 0.9f);
+			Debug.Log(moveQueue.Count);
 			transform.position = Vector3.Lerp (transform.position, moveQueue [0], Time.deltaTime * 0.8f);
-			if (Mathf.Abs (transform.position.x - moveQueue [0].x) < 0.3) {
+			if (Mathf.Abs (transform.position.x - moveQueue[0].x) < 0.3) {
 				moveQueue.RemoveAt (0);
+				if (moveQueue.Count > 0)
+					moveQueue = moveQueue.GetRange(1, moveQueue.Count-1);
 			}
 		} else
 			anim.SetFloat ("Speed", 0);
