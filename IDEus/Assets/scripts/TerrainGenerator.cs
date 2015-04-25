@@ -8,12 +8,12 @@ public class TerrainGenerator : MonoBehaviour {
 	{
 		int[] array = new int[arraySize];
 		for (int i = 0; i < array.Length; i++) {
-			array[i] = Random.Range(1,1);
+			array[i] = Random.Range(1,4);
 		}
 		return array;
 	}
 	void Start () {
-		int[] level = getRandomArray(8);
+		int[] level = getRandomArray(Random.Range(8,13));
 		GameObject clone;
 		for (int i = 0; i < level.Length; i++) {
 			for(int n = 0; n < level[i]; n++){

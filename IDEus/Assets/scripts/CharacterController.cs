@@ -33,14 +33,20 @@ public class CharacterController : MonoBehaviour {
 		if (direction != char_direction)
 			Flip ();
 		if (rb.velocity.magnitude < 0.01)
-			rb.AddForce (new Vector2 (direction*3f, 3f), ForceMode2D.Impulse);
+			rb.AddForce (new Vector2 (direction*3f, 6f), ForceMode2D.Impulse);
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
 
-	void Restart(){
+	public void Restart(){
 		Application.LoadLevel(Application.loadedLevel);
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
+
+	void setGravity(float gravity){
+		Physics.gravity = new Vector3(0f, gravity, 0f);
+		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
+	}
+
 	void Flip(){
 		char_direction *= -1;
 		transform.Rotate(new Vector3(0, (transform.rotation.y == 180) ? 0 : 180, 0));
