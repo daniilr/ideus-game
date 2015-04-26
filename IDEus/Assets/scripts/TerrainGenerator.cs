@@ -8,7 +8,7 @@ public class TerrainGenerator : MonoBehaviour {
 	{
 		int[] array = new int[arraySize];
 		for (int i = 0; i < array.Length; i++) {
-			array[i] = Random.Range(1,4);
+			array[i] = Random.Range(1,1);
 		}
 		return array;
 	}
