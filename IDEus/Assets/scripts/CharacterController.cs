@@ -2,33 +2,66 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class CharacterController : MonoBehaviour {
-	const int FRONT = 1;
-	const int BACK = -1;
-	Rigidbody2D rb;
-	int char_direction = FRONT;
-	private Animator anim;
-	private List<Vector3> moveQueue;
+public struct MoveAction {
+	public string type;
+	public Vector3 vector;
+	public Vector3 target;
+	public int direction;
+	public const int FRONT = 1;
+	public const int BACK = -1;
 
+	public MoveAction(string action_type){
+		type = action_type;
+		vector = new Vector3 (0, 0, 0);
+		target = new Vector3 (0, 0, 0);
+		direction = 0;
+	}
+	public bool needFleep(MoveAction next, int curDirection){
+		if (next.type == "jump") {
+			Debug.LogFormat("{0} {1}", curDirection, direction);
+			return direction != curDirection;
+		} else if (next.type == "walk") {
+			if (type == "walk"){
+				return vector.x*next.vector.x < 0;
+			} else
+				return direction*vector.x < 0;
+
+		}
+	    return false;
+	}
+}
+
+public class CharacterController : MonoBehaviour {
+	Rigidbody2D rb;
+	int char_direction = MoveAction.FRONT;
+	private Animator anim;
+	private List<MoveAction> moveQueue;
+	private Vector3 cur_target;
 	// Use this for initialization
 	void Start () {
 		//Camera camera = (Camera) GameObject.Find ("Main Camera").GetComponent (typeof(Camera));
 		//transform.localScale = new Vector3(camera.orthographicSize/2 * (Screen.width/Screen.height),camera.orthographicSize/2,0f);
 		rb = GetComponent<Rigidbody2D>();
 		anim = GetComponent<Animator> ();
-		moveQueue = new List<Vector3> ();
+		moveQueue = new List<MoveAction> ();
 	}
 
 	void Move(int direction)
 	{
 		GameObject blackbox = GameObject.Find ("BlackBlock");
 		Vector3 base_pos;
+		MoveAction moveAction = new MoveAction("walk");
 		if (moveQueue.Count > 0)
-			base_pos = moveQueue [moveQueue.Count - 1];
+			base_pos = moveQueue [moveQueue.Count - 1].target;
 		else
 			base_pos = transform.position;
-		Vector3 dest = base_pos + new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0);
-		moveQueue.Add (dest);
+
+		moveAction.vector = new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0);
+		moveAction.target = moveAction.vector + base_pos;
+		if (moveQueue.Count == 0 && char_direction * moveAction.vector.x < 0)
+			Flip ();
+
+		moveQueue.Add (moveAction);
 		//transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0));
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
@@ -37,8 +70,9 @@ public class CharacterController : MonoBehaviour {
 	{	
 //		if (direction != char_direction)
 //			Flip ();
-		if (rb.velocity.magnitude < 0.01)
-			rb.AddForce (new Vector2 (direction*3f, 6f), ForceMode2D.Impulse);
+		MoveAction moveAction = new MoveAction("jump");
+		moveAction.direction = direction*char_direction;
+		moveQueue.Add (moveAction);
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
 
@@ -73,35 +107,38 @@ public class CharacterController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Space))
-			Jump (BACK);
+			Jump (MoveAction.BACK);
 		if (Input.GetKeyDown (KeyCode.UpArrow))
-			Jump (FRONT);
+			Jump (MoveAction.FRONT);
 		if (Input.GetKeyDown (KeyCode.RightArrow))
-			Move (FRONT);
+			Move (MoveAction.FRONT);
 		if (Input.GetKeyDown (KeyCode.LeftArrow))
-			Move (BACK);
+			Move (MoveAction.BACK);
 		if (Input.GetKeyDown (KeyCode.F))
 			Flip ();
-		float axis = Input.GetAxis("Horizontal");
 		//anim.SetFloat ("Speed", Mathf.Abs(axis));
 		if (moveQueue.Count > 0) {
 			anim.SetFloat ("Speed", 0.9f);
-			Debug.Log(moveQueue.Count);
-			transform.position = Vector3.Lerp (transform.position, moveQueue [0], Time.deltaTime * 0.8f);
-			if (Mathf.Abs (transform.position.x - moveQueue[0].x) < 0.3) {
-				if (moveQueue.Count > 1 && char_direction*(transform.position.x - moveQueue[1].x) > 0){
-					Debug.Log (transform.position.x);
-					Debug.Log (moveQueue[1].x);
-					Flip ();
+			if (moveQueue[0].type == "jump"){
+				if (rb.velocity.magnitude < 0.01)
+					rb.AddForce (new Vector2 (moveQueue[0].direction*3f, 6f), ForceMode2D.Impulse);
+				else{
+					if (moveQueue.Count > 1 && moveQueue[0].needFleep(moveQueue[1], char_direction)){
+						Flip ();
+					}
+					moveQueue.RemoveAt (0);
 				}
-				moveQueue.RemoveAt (0);
-//				if (moveQueue.Count > 0)
-//					moveQueue = moveQueue.GetRange(1, moveQueue.Count);
+			} else {
+				transform.position = Vector3.MoveTowards (transform.position, moveQueue[0].target, Time.deltaTime * 0.8f);
+				Debug.Log (moveQueue[0].target.x);
+				if (Mathf.Abs (transform.position.x - moveQueue[0].target.x) < 0.3) {
+					if (moveQueue.Count > 1 && moveQueue[0].needFleep(moveQueue[1], char_direction)){
+						Flip ();
+					}
+					moveQueue.RemoveAt (0);
+				}
 			}
 		} else
 			anim.SetFloat ("Speed", 0);
-		if (axis != 0) {
-			transform.Translate(new Vector3(axis*-char_direction*0.02f,0,0));
-		}
 	}
 }
