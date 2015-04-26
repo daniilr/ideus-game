@@ -21,10 +21,13 @@ public class CharacterController : MonoBehaviour {
 
 	void Move(int direction)
 	{
-		if (char_direction != direction)
-			Flip ();
 		GameObject blackbox = GameObject.Find ("BlackBlock");
-		Vector3 dest = transform.position + new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0);
+		Vector3 base_pos;
+		if (moveQueue.Count > 0)
+			base_pos = moveQueue [moveQueue.Count - 1];
+		else
+			base_pos = transform.position;
+		Vector3 dest = base_pos + new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0);
 		moveQueue.Add (dest);
 		//transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0));
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
@@ -32,8 +35,8 @@ public class CharacterController : MonoBehaviour {
 
 	void Jump(int direction)
 	{	
-		if (direction != char_direction)
-			Flip ();
+//		if (direction != char_direction)
+//			Flip ();
 		if (rb.velocity.magnitude < 0.01)
 			rb.AddForce (new Vector2 (direction*3f, 6f), ForceMode2D.Impulse);
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
@@ -86,9 +89,14 @@ public class CharacterController : MonoBehaviour {
 			Debug.Log(moveQueue.Count);
 			transform.position = Vector3.Lerp (transform.position, moveQueue [0], Time.deltaTime * 0.8f);
 			if (Mathf.Abs (transform.position.x - moveQueue[0].x) < 0.3) {
+				if (moveQueue.Count > 1 && char_direction*(transform.position.x - moveQueue[1].x) > 0){
+					Debug.Log (transform.position.x);
+					Debug.Log (moveQueue[1].x);
+					Flip ();
+				}
 				moveQueue.RemoveAt (0);
-				if (moveQueue.Count > 0)
-					moveQueue = moveQueue.GetRange(1, moveQueue.Count-1);
+//				if (moveQueue.Count > 0)
+//					moveQueue = moveQueue.GetRange(1, moveQueue.Count);
 			}
 		} else
 			anim.SetFloat ("Speed", 0);
