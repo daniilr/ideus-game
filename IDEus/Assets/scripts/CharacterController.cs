@@ -12,6 +12,8 @@ public class CharacterController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		//Camera camera = (Camera) GameObject.Find ("Main Camera").GetComponent (typeof(Camera));
+		//transform.localScale = new Vector3(camera.orthographicSize/2 * (Screen.width/Screen.height),camera.orthographicSize/2,0f);
 		rb = GetComponent<Rigidbody2D>();
 		anim = GetComponent<Animator> ();
 		moveQueue = new List<Vector3> ();
@@ -38,6 +40,17 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	public void Restart(){
+		Application.LoadLevel(Application.loadedLevel);
+		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
+	}
+
+	public void Lose(){
+		Debug.Log ("Lose");
+		Application.LoadLevel(Application.loadedLevel);
+		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
+	}
+	public void Win(){
+		Debug.Log ("Win");
 		Application.LoadLevel(Application.loadedLevel);
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
