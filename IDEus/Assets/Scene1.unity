@@ -121,9 +121,9 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 1
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: .0720663071, y: 0}
   serializedVersion: 2
-  m_Size: {x: 1.5, y: 1.5}
+  m_Size: {x: 1.64413214, y: 1.5}
 --- !u!50 &265768231
 Rigidbody2D:
   m_ObjectHideFlags: 0
@@ -138,7 +138,7 @@ Rigidbody2D:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!4 &265768232
 Transform:
   m_ObjectHideFlags: 0
