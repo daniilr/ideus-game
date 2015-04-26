@@ -7,6 +7,7 @@ public struct MoveAction {
 	public Vector3 vector;
 	public Vector3 target;
 	public int direction;
+	public bool inAction;
 	public const int FRONT = 1;
 	public const int BACK = -1;
 
@@ -15,10 +16,10 @@ public struct MoveAction {
 		vector = new Vector3 (0, 0, 0);
 		target = new Vector3 (0, 0, 0);
 		direction = 0;
+		inAction = false;
 	}
 	public bool needFleep(MoveAction next, int curDirection){
 		if (next.type == "jump") {
-			Debug.LogFormat("{0} {1}", curDirection, direction);
 			return direction != curDirection;
 		} else if (next.type == "walk") {
 			if (type == "walk"){
@@ -119,9 +120,12 @@ public class CharacterController : MonoBehaviour {
 		if (moveQueue.Count > 0) {
 			anim.SetFloat ("Speed", 0.9f);
 			if (moveQueue[0].type == "jump"){
-				if (rb.velocity.magnitude < 0.01)
+				if (rb.velocity.magnitude < 0.01 && !moveQueue[0].inAction){
+					MoveAction ma = moveQueue[0];
+					ma.inAction = true;
+					moveQueue[0] = ma;
 					rb.AddForce (new Vector2 (moveQueue[0].direction*3f, 6f), ForceMode2D.Impulse);
-				else{
+				} else if (rb.velocity.magnitude < 0.01) {
 					if (moveQueue.Count > 1 && moveQueue[0].needFleep(moveQueue[1], char_direction)){
 						Flip ();
 					}
@@ -130,7 +134,7 @@ public class CharacterController : MonoBehaviour {
 				}
 			} else {
 				transform.position = Vector3.MoveTowards (transform.position, moveQueue[0].target, Time.deltaTime * 0.8f);
-				Debug.Log (moveQueue[0].target.x);
+
 				if (Mathf.Abs (transform.position.x - moveQueue[0].target.x) < 0.3) {
 					if (moveQueue.Count > 1 && moveQueue[0].needFleep(moveQueue[1], char_direction)){
 						Flip ();
@@ -141,5 +145,19 @@ public class CharacterController : MonoBehaviour {
 			}
 		} else
 			anim.SetFloat ("Speed", 0);
+	}
+	
+	void OnCollisionEnter2D(Collision2D collision) {
+
+		foreach (ContactPoint2D contact in collision.contacts) {
+			if (contact.point.y < GetComponent<Collider2D>().bounds.min.y){
+				if (moveQueue.Count > 0){
+					moveQueue.RemoveAt (0);
+					Callback("Collision");
+				}
+			}
+		}
+
+		
 	}
 }
