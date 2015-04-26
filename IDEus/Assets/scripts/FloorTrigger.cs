@@ -6,7 +6,6 @@ public class FloorTrigger : MonoBehaviour {
 	public void OnTriggerExit2D(Collider2D other) {
 		GameObject go = GameObject.Find("Global_CTRL");
 		CharacterController characterController = (CharacterController) go.GetComponent(typeof(CharacterController));
-		characterController.Lose();
 	}
 
 	public void OnTriggerStay2D(Collider2D other) {

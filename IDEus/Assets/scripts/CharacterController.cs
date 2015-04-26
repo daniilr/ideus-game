@@ -18,7 +18,7 @@ public struct MoveAction {
 	}
 	public bool needFleep(MoveAction next, int curDirection){
 		if (next.type == "jump") {
-			Debug.LogFormat("{0} {1}", curDirection, direction);
+			//Debug.LogFormat("{0} {1}", curDirection, direction);
 			return direction != curDirection;
 		} else if (next.type == "walk") {
 			if (type == "walk"){
@@ -30,13 +30,14 @@ public struct MoveAction {
 	    return false;
 	}
 }
-
+[RequireComponent(typeof(AudioSource))]
 public class CharacterController : MonoBehaviour {
 	Rigidbody2D rb;
 	int char_direction = MoveAction.FRONT;
 	private Animator anim;
 	private List<MoveAction> moveQueue;
 	private Vector3 cur_target;
+	AudioSource audio;
 	// Use this for initialization
 	void Start () {
 		//Camera camera = (Camera) GameObject.Find ("Main Camera").GetComponent (typeof(Camera));
@@ -44,10 +45,13 @@ public class CharacterController : MonoBehaviour {
 		rb = GetComponent<Rigidbody2D>();
 		anim = GetComponent<Animator> ();
 		moveQueue = new List<MoveAction> ();
+		audio = GetComponent<AudioSource> ();
 	}
 
 	void Move(int direction)
 	{
+		AudioClip step =  Resources.Load("sounds/step") as AudioClip;
+		audio.PlayOneShot(step,0.7f);
 		GameObject blackbox = GameObject.Find ("BlackBlock");
 		Vector3 base_pos;
 		MoveAction moveAction = new MoveAction("walk");
@@ -68,6 +72,8 @@ public class CharacterController : MonoBehaviour {
 
 	void Jump(int direction)
 	{	
+		AudioClip jump =  Resources.Load("sounds/jump") as AudioClip;
+		audio.PlayOneShot(jump,3f);
 //		if (direction != char_direction)
 //			Flip ();
 		MoveAction moveAction = new MoveAction("jump");
@@ -81,6 +87,8 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	public void Lose(){
+		AudioClip fall =  Resources.Load("sounds/drop") as AudioClip;
+		audio.PlayOneShot(fall,3f);
 		Debug.Log ("Lose");
 		Application.LoadLevel(Application.loadedLevel);
 		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
@@ -130,7 +138,7 @@ public class CharacterController : MonoBehaviour {
 				}
 			} else {
 				transform.position = Vector3.MoveTowards (transform.position, moveQueue[0].target, Time.deltaTime * 0.8f);
-				Debug.Log (moveQueue[0].target.x);
+				//Debug.Log (moveQueue[0].target.x);
 				if (Mathf.Abs (transform.position.x - moveQueue[0].target.x) < 0.3) {
 					if (moveQueue.Count > 1 && moveQueue[0].needFleep(moveQueue[1], char_direction)){
 						Flip ();
