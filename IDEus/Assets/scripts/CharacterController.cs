@@ -63,7 +63,7 @@ public class CharacterController : MonoBehaviour {
 
 		moveQueue.Add (moveAction);
 		//transform.Translate (new Vector3 (blackbox.GetComponent<Collider2D>().bounds.size.x*direction, 0, 0));
-		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
+
 	}
 
 	void Jump(int direction)
@@ -73,7 +73,6 @@ public class CharacterController : MonoBehaviour {
 		MoveAction moveAction = new MoveAction("jump");
 		moveAction.direction = direction*char_direction;
 		moveQueue.Add (moveAction);
-		Callback(System.Reflection.MethodBase.GetCurrentMethod().Name);
 	}
 
 	public void Restart(){
@@ -127,6 +126,7 @@ public class CharacterController : MonoBehaviour {
 						Flip ();
 					}
 					moveQueue.RemoveAt (0);
+					Callback("Jump");
 				}
 			} else {
 				transform.position = Vector3.MoveTowards (transform.position, moveQueue[0].target, Time.deltaTime * 0.8f);
@@ -135,6 +135,7 @@ public class CharacterController : MonoBehaviour {
 					if (moveQueue.Count > 1 && moveQueue[0].needFleep(moveQueue[1], char_direction)){
 						Flip ();
 					}
+					Callback("Move");
 					moveQueue.RemoveAt (0);
 				}
 			}
